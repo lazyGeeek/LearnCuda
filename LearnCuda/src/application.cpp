@@ -2,6 +2,7 @@
 #include "cuda/device.hpp"
 #include "cuda/utils/cuda_helper.hpp"
 #include "utils/logs/logger.hpp"
+#include "window/glfw.hpp"
 
 #include <string>
 #include <vector>
@@ -11,10 +12,14 @@ namespace LearnCuda
     Application::Application(const std::filesystem::path& projectPath) :
         ProjectPath(projectPath)
     {
+        Window::Settings::WindowSettings settings;
+        m_window = std::make_unique<Window::GLFW>(settings);
     }
 
     Application::~Application()
     {
+        if (m_window)
+            m_window = nullptr;
     }
 
     void Application::Run()
@@ -36,7 +41,6 @@ namespace LearnCuda
 
             ::Utils::Logs::Logger::Info("Device %d: \"%s\"", i, properties.name);
 
-            // Console log
             ::Utils::Logs::Logger::Info("CUDA Driver Version / Runtime Version          %g / %g",
                 Cuda::Utils::CudaHelper::GetDriverVersion(),
                 Cuda::Utils::CudaHelper::GetRuntimeVersion());
@@ -124,6 +128,12 @@ namespace LearnCuda
             ::Utils::Logs::Logger::Info("     < %s >", computeMode[Cuda::Device::GetComputeMode(i)].c_str());
 
             Cuda::Utils::CudaHelper::PrintCudaInfo();
+
+            while (m_window && !m_window->ShouldClose())
+            {
+                m_window->PollEvents();
+                m_window->SwapBuffers();
+            }
         }
     }
 }

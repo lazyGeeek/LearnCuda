@@ -23,6 +23,8 @@ namespace LearnCuda
         void Run();
 
         const std::filesystem::path ProjectPath;
+
+        std::unique_ptr<Window::GLFW> m_window = nullptr;
     };
 }
 

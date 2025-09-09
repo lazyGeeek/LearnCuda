@@ -2,7 +2,6 @@
 #include "utils/logs/logger.hpp"
 
 #include <sstream>
-// #include <stdexcept>
 
 namespace Cuda::Utils
 {
@@ -59,7 +58,7 @@ namespace Cuda::Utils
         return cudaGetErrorName(error);
     }
 
-    void CudaHelper::printCudaError(cudaError_t error)
+    void CudaHelper::PrintCudaError(cudaError_t error)
     {
         if (cudaSuccess != error)
         {
@@ -74,33 +73,33 @@ namespace Cuda::Utils
         cudaError_t errorId = cudaGetDeviceCount(&deviceCount);
 
         if (errorId != cudaError::cudaSuccess)
-            printCudaError(errorId);
+            PrintCudaError(errorId);
 
         return deviceCount;
     }
 
-    int CudaHelper::GetDriverVersion()
+    double CudaHelper::GetDriverVersion()
     {
-        int vesrion = 0;
+        int version = 0;
 
-        cudaError_t errorId = cudaDriverGetVersion(&vesrion);
+        cudaError_t errorId = cudaDriverGetVersion(&version);
 
         if (errorId != cudaError::cudaSuccess)
-            printCudaError(errorId);
+            PrintCudaError(errorId);
 
-        return vesrion;
+        return ((version / 1000) + (version % 100) / 10.0);
     }
     
-    int CudaHelper::GetRuntimeVersion()
+    double CudaHelper::GetRuntimeVersion()
     {
-        int vesrion = 0;
+        int version = 0;
 
-        cudaError_t errorId = cudaRuntimeGetVersion(&vesrion);
+        cudaError_t errorId = cudaRuntimeGetVersion(&version);
 
         if (errorId != cudaError::cudaSuccess)
-            printCudaError(errorId);
+            PrintCudaError(errorId);
 
-        return vesrion;
+        return ((version / 1000) + (version % 100) / 10.0);
     }
 
     void CudaHelper::PrintCudaInfo()

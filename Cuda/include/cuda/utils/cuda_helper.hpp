@@ -24,13 +24,13 @@ namespace Cuda::Utils
         static int ConvertSMVerToCores(int major, int minor);
         
         static int GetDeviceCount();
-        static int GetDriverVersion();
-        static int GetRuntimeVersion();
+        static double GetDriverVersion();
+        static double GetRuntimeVersion();
         
         static void PrintCudaInfo();
+        static void PrintCudaError(cudaError_t error);
         
     private:
-        static void printCudaError(cudaError_t error);
         static std::string cudaGetErrorEnum(cudaError_t error);
         static std::string cudaGetErrorEnum(CUresult error)
         {

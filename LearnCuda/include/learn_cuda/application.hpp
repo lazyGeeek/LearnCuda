@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <memory>
 
+namespace UI { class UIManager; }
 namespace Window { class GLFW; }
 
 namespace LearnCuda
@@ -23,7 +24,10 @@ namespace LearnCuda
         void Run();
 
         const std::filesystem::path ProjectPath;
+        const std::filesystem::path ConfigPath;
 
+    private:
+        std::unique_ptr<UI::UIManager> m_uiManager = nullptr;
         std::unique_ptr<Window::GLFW> m_window = nullptr;
     };
 }

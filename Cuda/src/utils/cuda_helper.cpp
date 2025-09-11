@@ -104,7 +104,7 @@ namespace Cuda::Utils
 
     void CudaHelper::PrintCudaInfo()
     {
-        ::Utils::Logs::Logger::Info("Driver = CUDART, Driver Version = %d, Runtime Version = %d, NumDevs = %d;",
+        ::Utils::Logs::Logger::Info("Driver = CUDART, Driver Version = %g, Runtime Version = %g, NumDevs = %d;",
             GetDriverVersion(), GetRuntimeVersion(), GetDeviceCount());
     }
 }

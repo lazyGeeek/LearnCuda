@@ -25,6 +25,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/bin/${CMAKE_SYSTE
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/Cuda)
 add_subdirectory(${CMAKE_SOURCE_DIR}/LearnCuda)
+add_subdirectory(${CMAKE_SOURCE_DIR}/UI)
 add_subdirectory(${CMAKE_SOURCE_DIR}/Utils)
 add_subdirectory(${CMAKE_SOURCE_DIR}/Window)
 

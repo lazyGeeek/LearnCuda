@@ -4,3 +4,6 @@
 [submodule "Window"]
 	path = Window
 	url = https://github.com/lazyGeeek/Window.git
+[submodule "UI"]
+	path = UI
+	url = https://github.com/lazyGeeek/UI.git

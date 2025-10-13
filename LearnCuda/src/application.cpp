@@ -1,11 +1,15 @@
 #include "learn_cuda/application.hpp"
 #include "learn_cuda/panels/cuda_info.hpp"
+#include "learn_cuda/panels/julia_fractal.hpp"
+#include "open_gl/driver.hpp"
 #include "ui/ui_manager.hpp"
+#include "ui/widgets/visuals/image.hpp"
 #include "window/glfw.hpp"
 
 #include <string>
 #include <vector>
 #include <iostream>
+#include <array>
 
 namespace LearnCuda
 {
@@ -13,12 +17,14 @@ namespace LearnCuda
         ProjectPath(projectPath),
         ConfigPath(ProjectPath / "Confings")
     {
+        if (!std::filesystem::exists(ConfigPath))
+            std::filesystem::create_directory(ConfigPath);
+
         Window::Settings::WindowSettings settings;
         settings.Title = "Learn CUDA";
         m_window = std::make_unique<Window::GLFW>(settings);
 
-        if (!std::filesystem::exists(ConfigPath))
-            std::filesystem::create_directory(ConfigPath);
+        m_opengl = std::make_unique<OpenGL::Driver>(true);
         
         m_uiManager = std::make_unique<UI::UIManager>(m_window->GetWindow(), ConfigPath / "ImGui.ini", "#version 460");
         m_uiManager->EnableDocking(true);
@@ -29,6 +35,9 @@ namespace LearnCuda
     {
         if (m_uiManager)
             m_uiManager = nullptr;
+
+        if (m_opengl)
+            m_opengl = nullptr;
 
         if (m_window)
             m_window = nullptr;
@@ -42,8 +51,12 @@ namespace LearnCuda
             canvas->SetDockspace(true);
             m_uiManager->SetCanvas(canvas);
 
-            std::shared_ptr<Panels::CudaInfoPanel> profiler = canvas->AddPanel<Panels::CudaInfoPanel>();
-            profiler->Resize(300.0f, 500.0f);
+            std::shared_ptr<Panels::CudaInfoPanel> cudaInfo = canvas->AddPanel<Panels::CudaInfoPanel>();
+            cudaInfo->Resize(300.0f, 500.0f);
+
+            std::shared_ptr<Panels::JuliaFractal> juliaFractal = canvas->AddPanel<Panels::JuliaFractal>();
+            juliaFractal->Resize(1100.0f, 700.0f);
+            juliaFractal->SetPosition(50.0f, 50.0f);
         }
 
         while (m_window && !m_window->ShouldClose())

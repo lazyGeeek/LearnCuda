@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <memory>
 
+namespace OpenGL { class Driver; }
 namespace UI { class UIManager; }
 namespace Window { class GLFW; }
 
@@ -27,6 +28,7 @@ namespace LearnCuda
         const std::filesystem::path ConfigPath;
 
     private:
+        std::unique_ptr<OpenGL::Driver> m_opengl = nullptr;
         std::unique_ptr<UI::UIManager> m_uiManager = nullptr;
         std::unique_ptr<Window::GLFW> m_window = nullptr;
     };

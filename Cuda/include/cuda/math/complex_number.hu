@@ -1,0 +1,56 @@
+#pragma once
+#ifndef CUDA_MATH_COMPLEX_NUMBER_HU_
+#define CUDA_MATH_COMPLEX_NUMBER_HU_
+
+#include <cuda_runtime.h>
+
+namespace Cuda::Math
+{
+    struct ComplexNum
+    {
+        __device__ ComplexNum(float real, float imagine) :
+            m_real { real }, m_imagine { imagine } { }
+
+        __device__ ComplexNum operator+(const ComplexNum& other)
+        {
+            return ComplexNum(m_real + other.m_real, m_imagine + other.m_imagine);
+        }
+
+        __device__ ComplexNum operator*(const ComplexNum& other)
+        {
+            return ComplexNum((m_real * other.m_real) - (m_imagine * other.m_imagine),
+                              (m_imagine * other.m_real) + (m_real * other.m_imagine));
+        }
+
+        float GetReal() const
+        {
+            return m_real;
+        }
+
+        float GetImagine() const
+        {
+            return m_imagine;
+        }
+
+        __device__ float GetMagnitude2() const
+        {
+            return m_real * m_real + m_imagine * m_imagine;
+        }
+
+        void SetReal(float real)
+        {
+            m_real = real;
+        }
+
+        void SetImagine(float imagine)
+        {
+            m_imagine = imagine;
+        }
+
+    private:
+        float m_real = 0.0f;
+        float m_imagine = 0.0f;
+    };
+}
+
+#endif // CUDA_MATH_COMPLEX_NUMBER_HU_

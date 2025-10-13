@@ -17,11 +17,13 @@ target_include_directories(${LEARN_CUDA_PROJECT} PRIVATE
     ${CMAKE_SOURCE_DIR}/Utils/include
     ${CMAKE_SOURCE_DIR}/UI/include
     ${CMAKE_SOURCE_DIR}/UI/thirdparty/include
+    ${CMAKE_SOURCE_DIR}/OpenGL/include
+    ${CMAKE_SOURCE_DIR}/OpenGL/thirdparty/include
     ${CMAKE_SOURCE_DIR}/UI/thirdparty/include/imgui
     ${CMAKE_SOURCE_DIR}/Window/include
     ${CMAKE_SOURCE_DIR}/Window/thirdparty/include
 )
-target_link_libraries(${LEARN_CUDA_PROJECT} Cuda UI Utils Window)
+target_link_libraries(${LEARN_CUDA_PROJECT} Cuda UI Utils OpenGL Window)
 
 foreach(LEARN_CUDA_FILE IN ITEMS ${LEARN_CUDA_CODE_LIST})
     get_filename_component(LEARN_CUDA_FILE_PATH "${LEARN_CUDA_FILE}" PATH)

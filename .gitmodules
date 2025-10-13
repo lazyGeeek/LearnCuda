@@ -7,3 +7,6 @@
 [submodule "UI"]
 	path = UI
 	url = https://github.com/lazyGeeek/UI.git
+[submodule "OpenGL"]
+	path = OpenGL
+	url = https://github.com/lazyGeeek/OpenGL.git

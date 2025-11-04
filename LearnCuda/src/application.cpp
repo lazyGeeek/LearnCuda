@@ -1,6 +1,5 @@
 #include "learn_cuda/application.hpp"
-#include "learn_cuda/panels/cuda_info.hpp"
-#include "learn_cuda/panels/julia_fractal.hpp"
+#include "learn_cuda/panels/menu.hpp"
 #include "open_gl/driver.hpp"
 #include "ui/ui_manager.hpp"
 #include "ui/widgets/visuals/image.hpp"
@@ -51,12 +50,8 @@ namespace LearnCuda
             canvas->SetDockspace(true);
             m_uiManager->SetCanvas(canvas);
 
-            std::shared_ptr<Panels::CudaInfoPanel> cudaInfo = canvas->AddPanel<Panels::CudaInfoPanel>();
-            cudaInfo->Resize(300.0f, 500.0f);
-
-            std::shared_ptr<Panels::JuliaFractal> juliaFractal = canvas->AddPanel<Panels::JuliaFractal>();
-            juliaFractal->Resize(1100.0f, 700.0f);
-            juliaFractal->SetPosition(50.0f, 50.0f);
+            std::shared_ptr<Panels::MenuPanel> menu = canvas->CreatePanel<Panels::MenuPanel>(canvas);
+            menu->Resize(300.0f, 500.0f);
         }
 
         while (m_window && !m_window->ShouldClose())

@@ -10,7 +10,6 @@ namespace LearnCuda::Panels
     {
     public:
         CudaInfoPanel();
-        ~CudaInfoPanel();
 
         CudaInfoPanel(const CudaInfoPanel& other)             = delete;
         CudaInfoPanel(CudaInfoPanel&& other)                  = delete;

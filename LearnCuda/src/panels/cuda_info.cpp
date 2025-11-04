@@ -32,7 +32,6 @@ namespace LearnCuda::Panels
             cudaDeviceProp properties = Cuda::Device::GetProperties(i);
             UITreeNodePtr gpu = CreateWidget<UITreeNode>(properties.name);
             
-            // ::Utils::Logs::Logger::Info("Device %d: \"%s\"", i, properties.name);
             gpu->CreateWidget<UIColoredText>(UI::Types::Color::White, "Device %d: \"%s\"", i, properties.name);
 
             gpu->CreateWidget<UIColoredText>(UI::Types::Color::White, "CUDA Driver Version / Runtime Version          %g / %g",
@@ -121,10 +120,5 @@ namespace LearnCuda::Panels
             gpu->CreateWidget<UIColoredText>(UI::Types::Color::White, "Compute Mode:");
             gpu->CreateWidget<UIColoredText>(UI::Types::Color::White, "     < %s >", computeMode[Cuda::Device::GetComputeMode(i)].c_str());
         }
-    }
-
-    CudaInfoPanel::~CudaInfoPanel()
-    {
-        RemoveAllWidgets();
-    }    
+    } 
 }

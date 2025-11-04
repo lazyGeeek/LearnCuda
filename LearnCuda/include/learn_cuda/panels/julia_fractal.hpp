@@ -25,7 +25,7 @@ namespace LearnCuda::Panels
     {
     public:
         JuliaFractal();
-        ~JuliaFractal();
+        ~JuliaFractal() override;
 
         JuliaFractal(const JuliaFractal& other)             = delete;
         JuliaFractal(JuliaFractal&& other)                  = delete;

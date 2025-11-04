@@ -97,25 +97,40 @@ namespace LearnCuda::Panels
         info = m_gpuTexture->GetInfo();
         gpuImageGroup->CreateWidget<UI::Widgets::Visuals::Image>(info.Id, info.Width, info.Height);
 
-        m_cpuCalculationThread = std::thread([&]()
+        OpenEvent += [&]()
         {
-            m_isCPUCalculationRunning = true;
-
-            while (m_isCPUCalculationRunning)
+            m_cpuCalculationThread = std::thread([&]()
             {
-                if (IsOpened()) calculateJuliaOnCPU();
-            }
-        });
+                m_isCPUCalculationRunning = true;
 
-        m_gpuCalculationThread = std::thread([&]()
+                while (m_isCPUCalculationRunning)
+                {
+                    if (IsOpened()) calculateJuliaOnCPU();
+                }
+            });
+
+            m_gpuCalculationThread = std::thread([&]()
+            {
+                m_isGPUCalculationRunning = true;
+
+                while (m_isGPUCalculationRunning)
+                {
+                    if (IsOpened()) calculateJuliaOnGPU();
+                }
+            });
+        };
+
+        CloseEvent += [&]()
         {
-            m_isGPUCalculationRunning = true;
+            m_isCPUCalculationRunning = false;
+            m_isGPUCalculationRunning = false;
+            
+            if (m_cpuCalculationThread.joinable())
+                m_cpuCalculationThread.join();
 
-            while (m_isGPUCalculationRunning)
-            {
-                if (IsOpened()) calculateJuliaOnGPU();
-            }
-        });
+            if (m_gpuCalculationThread.joinable())
+                m_gpuCalculationThread.join();
+        };
     }
 
     JuliaFractal::~JuliaFractal()

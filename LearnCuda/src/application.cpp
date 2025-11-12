@@ -5,10 +5,9 @@
 #include "ui/widgets/visuals/image.hpp"
 #include "window/glfw.hpp"
 
+#include <array>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <array>
 
 namespace LearnCuda
 {
@@ -53,6 +52,11 @@ namespace LearnCuda
             std::shared_ptr<Panels::MenuPanel> menu = canvas->CreatePanel<Panels::MenuPanel>(canvas);
             menu->Resize(300.0f, 500.0f);
         }
+
+        m_window->CloseEvent += [&]()
+        {
+            canvas->RemoveAllPanels();
+        };
 
         while (m_window && !m_window->ShouldClose())
         {

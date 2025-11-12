@@ -1,16 +1,15 @@
-#include "learn_cuda/panels/julia_fractal.hpp"
+#include "learn_cuda/panels/waves.hpp"
 #include "open_gl/resources/texture.hpp"
-#include "ui/widgets/drags/single_drag.hpp"
-#include "ui/widgets/inputs/multiple_numbers_input.hpp"
-#include "ui/widgets/inputs/single_number_input.hpp"
 #include "ui/widgets/layouts/group.hpp"
 #include "ui/widgets/texts/text.hpp"
 #include "ui/widgets/visuals/image.hpp"
 #include "utils/time/clock.hpp"
 
+#include <cmath>
+
 namespace LearnCuda::Panels
 {
-    JuliaFractal::JuliaFractal() : UI::Panels::WindowPanel("Julia Fractal")
+    Waves::Waves() : UI::Panels::WindowPanel("Julia Fractal")
     {
         m_cpuImageBuffer.resize(IMAGE_BUFFER_SIZE);
         m_gpuImageBuffer.resize(IMAGE_BUFFER_SIZE);
@@ -34,49 +33,6 @@ namespace LearnCuda::Panels
         UI::Settings::GroupWidgetSettings groupSettings;
         groupSettings.FrameStyle = false;
         groupSettings.AutoResizeY = true;
-        
-        std::shared_ptr<UI::Widgets::Layouts::Group> configGroup = CreateWidget<UI::Widgets::Layouts::Group>(groupSettings);
-        m_scaleDrag = configGroup->CreateWidget<UI::Widgets::Drags::SingleDrag<float>>("Scale",
-                                                                                       m_scaleLimit.first,
-                                                                                       m_scaleLimit.second,
-                                                                                       m_scale, 0.1f);
-        m_scaleDrag->SetSameLine(true);
-        m_scaleEventListener = m_scaleDrag->ValueChangedEvent += ([&](float value)
-        {
-            m_scale = value;
-        });
-        
-        std::array<float, 2> constants = { m_constant.first, m_constant.second };
-        m_constantInput = configGroup->CreateWidget<UI::Widgets::Inputs::MultipleNumbersInput<float, 2>>("Constant",
-                                                                                                         constants,
-                                                                                                         0.001f,
-                                                                                                         0.001f);
-        m_constantInput->SetSameLine(true);
-        m_constantEventListener = m_constantInput->ContentChangedEvent += ([&](std::array<float, 2> values)
-        {
-
-            m_constant = { values[0], values[1] };
-        });
-
-        m_iterationsDrag = configGroup->CreateWidget<UI::Widgets::Drags::SingleDrag<uint32_t>>("Iterations",
-                                                                                               m_iterationsLimit.first,
-                                                                                               m_iterationsLimit.second,
-                                                                                               m_iterations, 1);
-        m_iterationsDrag->SetSameLine(true);
-        m_iterationsEventListener = m_iterationsDrag->ValueChangedEvent += ([&](uint32_t content)
-        {
-            if (content <= m_iterationsLimit.first)
-            {
-                content = m_iterationsLimit.first;
-                m_iterationsDrag->SetValue(content);
-            }
-            else if (content >= m_iterationsLimit.second)
-            {
-                content = m_iterationsLimit.second;
-                m_iterationsDrag->SetValue(content);
-            }
-            m_iterations = content;
-        });
 
         groupSettings.AutoResizeX = true;
         std::shared_ptr<UI::Widgets::Layouts::Group> cpuImageGroup = CreateWidget<UI::Widgets::Layouts::Group>(groupSettings);
@@ -100,20 +56,24 @@ namespace LearnCuda::Panels
             m_cpuCalculationThread = std::thread([&]()
             {
                 m_isCPUCalculationRunning = true;
+                Utils::Time::Clock ticks;
+                ticks.Start();
 
                 while (m_isCPUCalculationRunning)
                 {
-                    if (IsOpened()) calculateJuliaOnCPU();
+                    if (IsOpened()) calculateWavesOnCPU(ticks.GetMilliseconds());
                 }
             });
 
             m_gpuCalculationThread = std::thread([&]()
             {
                 m_isGPUCalculationRunning = true;
+                Utils::Time::Clock ticks;
+                ticks.Start();
 
                 while (m_isGPUCalculationRunning)
                 {
-                    if (IsOpened()) calculateJuliaOnGPU();
+                    if (IsOpened()) calculateWavesOnGPU(ticks.GetMilliseconds());
                 }
             });
         };
@@ -131,7 +91,7 @@ namespace LearnCuda::Panels
         };
     }
 
-    JuliaFractal::~JuliaFractal()
+    Waves::~Waves()
     {
         m_isCPUCalculationRunning = false;
         m_isGPUCalculationRunning = false;
@@ -142,15 +102,6 @@ namespace LearnCuda::Panels
         if (m_gpuCalculationThread.joinable())
             m_gpuCalculationThread.join();
 
-        if (m_scaleDrag)
-            m_scaleDrag->ValueChangedEvent -= m_scaleEventListener;
-
-        if (m_constantInput)
-            m_constantInput->ContentChangedEvent -= m_constantEventListener;
-
-        if (m_iterationsDrag)
-            m_iterationsDrag->ValueChangedEvent -= m_iterationsEventListener;
-
         RemoveAllWidgets();
 
         if (m_cpuTexture)
@@ -160,7 +111,7 @@ namespace LearnCuda::Panels
             m_gpuTexture = nullptr;
     }
 
-    void JuliaFractal::DrawImpl()
+    void Waves::DrawImpl()
     {
         m_cpuTexture->UpdateTexture(m_cpuImageBuffer.data(), IMAGE_WIDTH, IMAGE_HEIGHT);
         m_gpuTexture->UpdateTexture(m_gpuImageBuffer.data(), IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -168,32 +119,17 @@ namespace LearnCuda::Panels
         UI::Panels::WindowPanel::DrawImpl();
     }
 
-    int JuliaFractal::juliaCPU(int x, int y)
+    int Waves::wavesCPU(int x, int y, float ticks)
     {
-        float jx = ((IMAGE_WIDTH / 2.0f - x) / (IMAGE_WIDTH / 2.0f)) / m_scale;
-        float jy = ((IMAGE_HEIGHT / 2.0f - y) / (IMAGE_HEIGHT / 2.0f)) / m_scale;
 
-        std::pair<float, float> curr(jx, jy);
+        float fx = x - IMAGE_WIDTH / 2.0f;
+        float fy = y - IMAGE_HEIGHT / 2.0f;
+        float d = sqrt(fx * fx + fy * fy);
 
-        for (int i = 0; i < m_iterations; i++)
-        {
-            std::pair<float, float> temp(0.0f, 0.0f);
-            temp.first = (curr.first * curr.first) - (curr.second * curr.second);
-            temp.second = (curr.second * curr.first) + (curr.first * curr.second);
-            curr = temp;
-
-            curr.first = curr.first + m_constant.first;
-            curr.second = curr.second + m_constant.second;
-
-            float magnitude = curr.first * curr.first + curr.second * curr.second;
-            if (magnitude > ABSOLUTE_VALUE)
-                return 0;
-        }
-
-        return 1;
+        return static_cast<int>(128.0f + 127.0f * cos(d / 10.0f - ticks / 7.0f) / (d / 10.0f + 1.0f));
     }
 
-    void JuliaFractal::calculateJuliaOnCPU()
+    void Waves::calculateWavesOnCPU(int64_t ticks)
     {
         if (!m_isCPUCalculationRunning)
             return;
@@ -207,7 +143,7 @@ namespace LearnCuda::Panels
             {
                 int offset = x * 3 + y * 3 * IMAGE_WIDTH;
 
-                int color = 255 * juliaCPU(x, y);
+                int color = wavesCPU(x, y, ticks / 50.0f);
 
                 m_cpuImageBuffer[offset + 0] = color;
                 m_cpuImageBuffer[offset + 1] = color;

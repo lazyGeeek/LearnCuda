@@ -10,6 +10,7 @@ namespace LearnCuda::Panels
 {
     class CudaInfoPanel;
     class JuliaFractal;
+    class Waves;
 
     class MenuPanel : public UI::Panels::WindowPanel
     {
@@ -26,6 +27,7 @@ namespace LearnCuda::Panels
 
         std::shared_ptr<CudaInfoPanel> m_cudaInfo = nullptr;
         std::shared_ptr<JuliaFractal> m_juliaFractal = nullptr;
+        std::shared_ptr<Waves> m_waves = nullptr;
     };
 }
 

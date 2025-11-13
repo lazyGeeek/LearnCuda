@@ -1,6 +1,6 @@
 #pragma once
-#ifndef LEARN_CUDA_PANELS_WAVES_HPP_
-#define LEARN_CUDA_PANELS_WAVES_HPP_
+#ifndef LEARN_CUDA_PANELS_RIPPLES_HPP_
+#define LEARN_CUDA_PANELS_RIPPLES_HPP_
 
 #include "ui/panels/window_panel.hpp"
 
@@ -13,28 +13,27 @@ namespace UI::Widgets::Texts { class Text; }
 
 namespace LearnCuda::Panels
 {
-    class Waves : public UI::Panels::WindowPanel
+    class Ripples : public UI::Panels::WindowPanel
     {
     public:
-        Waves();
-        ~Waves() override;
+        Ripples();
+        ~Ripples() override;
 
-        Waves(const Waves& other)             = delete;
-        Waves(Waves&& other)                  = delete;
-        Waves& operator=(const Waves& other)  = delete;
-        Waves& operator=(const Waves&& other) = delete;
+        Ripples(const Ripples& other)             = delete;
+        Ripples(Ripples&& other)                  = delete;
+        Ripples& operator=(const Ripples& other)  = delete;
+        Ripples& operator=(const Ripples&& other) = delete;
 
     protected:
         virtual void DrawImpl() override;
 
     private:
-        void calculateWavesOnCPU(int64_t ticks);
-        void calculateWavesOnGPU(int64_t ticks);
+        void calculateRipplesOnCPU(int64_t ticks);
+        void calculateRipplesOnGPU(int64_t ticks);
 
-        int wavesCPU(int x, int y, float ticks);
+        int ripplesCPU(int x, int y, float ticks);
 
-        __device__ int wavesGPU(int x, int y, float ticks);
-        friend __global__ void gpuStartCalculation(uint8_t* buffer, float ticks, Waves& waves);
+        friend __global__ void ripplesGpu(uint8_t* buffer, float ticks, Ripples& ripples);
 
         const size_t IMAGE_WIDTH = 500.0f;
         const size_t IMAGE_HEIGHT = 500.0f;
@@ -57,4 +56,4 @@ namespace LearnCuda::Panels
     };
 }
 
-#endif // LEARN_CUDA_PANELS_WAVES_HPP_
+#endif // LEARN_CUDA_PANELS_RIPPLES_HPP_

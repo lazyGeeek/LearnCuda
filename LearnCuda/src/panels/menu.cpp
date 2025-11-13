@@ -1,7 +1,8 @@
 #include "learn_cuda/panels/menu.hpp"
 #include "learn_cuda/panels/cuda_info.hpp"
 #include "learn_cuda/panels/julia_fractal.hpp"
-#include "learn_cuda/panels/waves.hpp"
+#include "learn_cuda/panels/ripples.hpp"
+#include "learn_cuda/panels/threads_sync.hpp"
 #include "ui/modules/canvas.hpp"
 #include "ui/widgets/buttons/button.hpp"
 
@@ -24,16 +25,23 @@ namespace LearnCuda::Panels
         m_juliaFractal->SetPosition(50.0f, 50.0f);
         m_juliaFractal->SetOpened(false);
 
-        m_waves = m_canvas->CreatePanel<Panels::Waves>();
-        m_waves->SetAutoSize(true);
-        m_waves->Resize(1100.0f, 700.0f);
-        m_waves->SetPosition(50.0f, 50.0f);
-        m_waves->SetOpened(false);
+        m_ripples = m_canvas->CreatePanel<Panels::Ripples>();
+        m_ripples->SetAutoSize(true);
+        m_ripples->Resize(1100.0f, 700.0f);
+        m_ripples->SetPosition(50.0f, 50.0f);
+        m_ripples->SetOpened(false);
+
+        m_threadsSync = m_canvas->CreatePanel<Panels::ThreadsSync>();
+        m_threadsSync->SetAutoSize(true);
+        m_threadsSync->Resize(1100.0f, 700.0f);
+        m_threadsSync->SetPosition(50.0f, 50.0f);
+        m_threadsSync->SetOpened(false);
 
         UIButtonPtr cudaInfoButton = CreateWidget<UIButton>("Show GPU Info");
         cudaInfoButton->Separate(true);
         UIButtonPtr juliaFractalButton = CreateWidget<UIButton>("Julia Fractal");
-        UIButtonPtr wavesButton = CreateWidget<UIButton>("Waves");
+        UIButtonPtr wavesButton = CreateWidget<UIButton>("Ripples");
+        UIButtonPtr threadsSyncButton = CreateWidget<UIButton>("Threads Sync");
 
         cudaInfoButton->ClickedEvent += [&]()
         {
@@ -47,7 +55,12 @@ namespace LearnCuda::Panels
 
         wavesButton->ClickedEvent += [&]()
         {
-            if (m_waves) m_waves->SetOpened(true);
+            if (m_ripples) m_ripples->SetOpened(true);
+        };
+
+        threadsSyncButton->ClickedEvent += [&]()
+        {
+            if (m_threadsSync) m_threadsSync->SetOpened(true);
         };
     }
 }

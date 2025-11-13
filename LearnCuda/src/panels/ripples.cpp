@@ -1,4 +1,4 @@
-#include "learn_cuda/panels/waves.hpp"
+#include "learn_cuda/panels/ripples.hpp"
 #include "open_gl/resources/texture.hpp"
 #include "ui/widgets/layouts/group.hpp"
 #include "ui/widgets/texts/text.hpp"
@@ -9,7 +9,7 @@
 
 namespace LearnCuda::Panels
 {
-    Waves::Waves() : UI::Panels::WindowPanel("Julia Fractal")
+    Ripples::Ripples() : UI::Panels::WindowPanel("Ripples")
     {
         m_cpuImageBuffer.resize(IMAGE_BUFFER_SIZE);
         m_gpuImageBuffer.resize(IMAGE_BUFFER_SIZE);
@@ -33,8 +33,8 @@ namespace LearnCuda::Panels
         UI::Settings::GroupWidgetSettings groupSettings;
         groupSettings.FrameStyle = false;
         groupSettings.AutoResizeY = true;
-
         groupSettings.AutoResizeX = true;
+        
         std::shared_ptr<UI::Widgets::Layouts::Group> cpuImageGroup = CreateWidget<UI::Widgets::Layouts::Group>(groupSettings);
         cpuImageGroup->SetSameLine(true);
         cpuImageGroup->CreateWidget<UI::Widgets::Texts::Text>("CPU Calculation");
@@ -61,7 +61,7 @@ namespace LearnCuda::Panels
 
                 while (m_isCPUCalculationRunning)
                 {
-                    if (IsOpened()) calculateWavesOnCPU(ticks.GetMilliseconds());
+                    if (IsOpened()) calculateRipplesOnCPU(ticks.GetMilliseconds());
                 }
             });
 
@@ -73,7 +73,7 @@ namespace LearnCuda::Panels
 
                 while (m_isGPUCalculationRunning)
                 {
-                    if (IsOpened()) calculateWavesOnGPU(ticks.GetMilliseconds());
+                    if (IsOpened()) calculateRipplesOnGPU(ticks.GetMilliseconds());
                 }
             });
         };
@@ -91,7 +91,7 @@ namespace LearnCuda::Panels
         };
     }
 
-    Waves::~Waves()
+    Ripples::~Ripples()
     {
         m_isCPUCalculationRunning = false;
         m_isGPUCalculationRunning = false;
@@ -111,7 +111,7 @@ namespace LearnCuda::Panels
             m_gpuTexture = nullptr;
     }
 
-    void Waves::DrawImpl()
+    void Ripples::DrawImpl()
     {
         m_cpuTexture->UpdateTexture(m_cpuImageBuffer.data(), IMAGE_WIDTH, IMAGE_HEIGHT);
         m_gpuTexture->UpdateTexture(m_gpuImageBuffer.data(), IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -119,9 +119,8 @@ namespace LearnCuda::Panels
         UI::Panels::WindowPanel::DrawImpl();
     }
 
-    int Waves::wavesCPU(int x, int y, float ticks)
+    int Ripples::ripplesCPU(int x, int y, float ticks)
     {
-
         float fx = x - IMAGE_WIDTH / 2.0f;
         float fy = y - IMAGE_HEIGHT / 2.0f;
         float d = sqrt(fx * fx + fy * fy);
@@ -129,7 +128,7 @@ namespace LearnCuda::Panels
         return static_cast<int>(128.0f + 127.0f * cos(d / 10.0f - ticks / 7.0f) / (d / 10.0f + 1.0f));
     }
 
-    void Waves::calculateWavesOnCPU(int64_t ticks)
+    void Ripples::calculateRipplesOnCPU(int64_t ticks)
     {
         if (!m_isCPUCalculationRunning)
             return;
@@ -143,7 +142,7 @@ namespace LearnCuda::Panels
             {
                 int offset = x * 3 + y * 3 * IMAGE_WIDTH;
 
-                int color = wavesCPU(x, y, ticks / 50.0f);
+                int color = ripplesCPU(x, y, ticks / 50.0f);
 
                 m_cpuImageBuffer[offset + 0] = color;
                 m_cpuImageBuffer[offset + 1] = color;

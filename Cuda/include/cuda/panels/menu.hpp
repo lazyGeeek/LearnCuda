@@ -1,12 +1,12 @@
 #pragma once
-#ifndef LEARN_CUDA_PANELS_MENU_PANEL_HPP_
-#define LEARN_CUDA_PANELS_MENU_PANEL_HPP_
+#ifndef CUDA_PANELS_MENU_PANEL_HPP_
+#define CUDA_PANELS_MENU_PANEL_HPP_
 
 #include "ui/panels/window_panel.hpp"
 
 namespace UI::Modules { class Canvas; }
 
-namespace LearnCuda::Panels
+namespace Cuda::Panels
 {
     class CudaInfoPanel;
     class JuliaFractal;
@@ -33,4 +33,4 @@ namespace LearnCuda::Panels
     };
 }
 
-#endif // LEARN_CUDA_PANELS_MENU_PANEL_HPP_
+#endif // CUDA_PANELS_MENU_PANEL_HPP_

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef LEARN_CUDA_PANELS_THREADS_SYNC_HPP_
-#define LEARN_CUDA_PANELS_THREADS_SYNC_HPP_
+#ifndef CUDA_PANELS_THREADS_SYNC_HPP_
+#define CUDA_PANELS_THREADS_SYNC_HPP_
 
 #include "ui/panels/window_panel.hpp"
 
@@ -11,7 +11,7 @@
 namespace OpenGL::Resources { class Texture; }
 namespace UI::Widgets::Texts { class Text; }
 
-namespace LearnCuda::Panels
+namespace Cuda::Panels
 {
     class ThreadsSync : public UI::Panels::WindowPanel
     {
@@ -31,8 +31,7 @@ namespace LearnCuda::Panels
         void calculateAsync();
         void calculateSync();
 
-        friend __global__ void async(uint8_t* buffer, ThreadsSync& threadsSync);
-        friend __global__ void sync(uint8_t* buffer, ThreadsSync& threadsSync);
+        friend __global__ void kernel(uint8_t* buffer, ThreadsSync& threadsSync, bool sync);
 
         const size_t IMAGE_WIDTH = 500.0f;
         const size_t IMAGE_HEIGHT = 500.0f;
@@ -56,4 +55,4 @@ namespace LearnCuda::Panels
     };
 }
 
-#endif // LEARN_CUDA_PANELS_THREADS_SYNC_HPP_
+#endif // CUDA_PANELS_THREADS_SYNC_HPP_

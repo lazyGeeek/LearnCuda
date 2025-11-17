@@ -1,6 +1,6 @@
 #pragma once
-#ifndef LEARN_CUDA_PANELS_JULIA_FRACTAL_HPP_
-#define LEARN_CUDA_PANELS_JULIA_FRACTAL_HPP_
+#ifndef CUDA_PANELS_JULIA_FRACTAL_HPP_
+#define CUDA_PANELS_JULIA_FRACTAL_HPP_
 
 #include "ui/panels/window_panel.hpp"
 
@@ -19,7 +19,7 @@ namespace UI::Widgets::Inputs { template<typename T> class SingleNumberInput; }
 
 namespace UI::Widgets::Texts { class Text; }
 
-namespace LearnCuda::Panels
+namespace Cuda::Panels
 {
     class JuliaFractal : public UI::Panels::WindowPanel
     {
@@ -93,4 +93,4 @@ namespace LearnCuda::Panels
     };
 }
 
-#endif // LEARN_CUDA_PANELS_JULIA_FRACTAL_HPP_
+#endif // CUDA_PANELS_JULIA_FRACTAL_HPP_

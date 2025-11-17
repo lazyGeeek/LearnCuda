@@ -1,4 +1,4 @@
-#include "learn_cuda/panels/threads_sync.hpp"
+#include "cuda/panels/threads_sync.hpp"
 #include "open_gl/resources/texture.hpp"
 #include "ui/widgets/layouts/group.hpp"
 #include "ui/widgets/texts/text.hpp"
@@ -7,7 +7,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace LearnCuda::Panels
+namespace Cuda::Panels
 {
     ThreadsSync::ThreadsSync() : UI::Panels::WindowPanel("Thread Sync")
     {

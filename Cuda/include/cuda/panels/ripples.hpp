@@ -1,6 +1,6 @@
 #pragma once
-#ifndef LEARN_CUDA_PANELS_RIPPLES_HPP_
-#define LEARN_CUDA_PANELS_RIPPLES_HPP_
+#ifndef CUDA_PANELS_RIPPLES_HPP_
+#define CUDA_PANELS_RIPPLES_HPP_
 
 #include "ui/panels/window_panel.hpp"
 
@@ -11,7 +11,7 @@
 namespace OpenGL::Resources { class Texture; }
 namespace UI::Widgets::Texts { class Text; }
 
-namespace LearnCuda::Panels
+namespace Cuda::Panels
 {
     class Ripples : public UI::Panels::WindowPanel
     {
@@ -56,4 +56,4 @@ namespace LearnCuda::Panels
     };
 }
 
-#endif // LEARN_CUDA_PANELS_RIPPLES_HPP_
+#endif // CUDA_PANELS_RIPPLES_HPP_

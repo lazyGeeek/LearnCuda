@@ -2,7 +2,7 @@ set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(CMAKE_POLICY_DEFAULT_CMP0135 NEW)
 cmake_minimum_required(VERSION 3.18)
 
-project(LearnCuda CUDA CXX)
+project(Cuda CUDA CXX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -24,12 +24,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/bin/${CMAKE_SYSTEM_
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/bin/${CMAKE_SYSTEM_NAME}/${CMAKE_GENERATOR_PLATFORM})
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/Cuda)
-add_subdirectory(${CMAKE_SOURCE_DIR}/LearnCuda)
 add_subdirectory(${CMAKE_SOURCE_DIR}/OpenGL)
 add_subdirectory(${CMAKE_SOURCE_DIR}/UI)
 add_subdirectory(${CMAKE_SOURCE_DIR}/Utils)
 add_subdirectory(${CMAKE_SOURCE_DIR}/Window)
 
 if(MSVC)
-    set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT LearnCuda)
+    set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Cuda)
 endif()

@@ -1,5 +1,5 @@
-#include "learn_cuda/application.hpp"
-#include "learn_cuda/panels/menu.hpp"
+#include "cuda/application.hpp"
+#include "cuda/panels/menu.hpp"
 #include "open_gl/driver.hpp"
 #include "ui/ui_manager.hpp"
 #include "ui/widgets/visuals/image.hpp"
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace LearnCuda
+namespace Cuda
 {
     Application::Application(const std::filesystem::path& projectPath) :
         ProjectPath(projectPath),

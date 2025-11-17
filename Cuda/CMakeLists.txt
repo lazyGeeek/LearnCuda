@@ -26,24 +26,32 @@ file(
     "${CMAKE_CURRENT_SOURCE_DIR}/include/cuda/*.inl"
 )
 
-add_library(${CUDA_PROJECT} SHARED ${CUDA_CODE_LIST})
+add_executable(${CUDA_PROJECT} ${CUDA_CODE_LIST})
 
+target_compile_features(${CUDA_PROJECT} PRIVATE cxx_std_17)
 target_include_directories(${CUDA_PROJECT} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/Utils/include
+    ${CMAKE_SOURCE_DIR}/UI/include
+    ${CMAKE_SOURCE_DIR}/UI/thirdparty/include
+    ${CMAKE_SOURCE_DIR}/UI/thirdparty/include/imgui
+    ${CMAKE_SOURCE_DIR}/OpenGL/include
+    ${CMAKE_SOURCE_DIR}/OpenGL/thirdparty/include
+    ${CMAKE_SOURCE_DIR}/Window/include
+    ${CMAKE_SOURCE_DIR}/Window/thirdparty/include
     ${CUDAToolkit_INCLUDE_DIRS}
 )
 target_compile_features(${CUDA_PROJECT} PRIVATE cxx_std_17 cuda_std_17)
-target_link_libraries(${CUDA_PROJECT} PUBLIC Utils CUDA::cudart)
+target_link_libraries(${CUDA_PROJECT} UI Utils OpenGL Window CUDA::cudart)
 set_target_properties(${CUDA_PROJECT} PROPERTIES CUDA_ARCHITECTURES native)
 
-foreach(CODE_FILE IN ITEMS ${CUDA_CODE_LIST})
-    get_filename_component(CODE_FILE_PATH "${CODE_FILE}" PATH)
-    file(RELATIVE_PATH CODE_FILE_RELATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" "${CODE_FILE_PATH}")
-    string(REPLACE "\\" "/" GROUP_PATH "${CODE_FILE_RELATIVE_PATH}")
+foreach(CUDA_FILE IN ITEMS ${CUDA_CODE_LIST})
+    get_filename_component(CUDA_FILE_PATH "${CUDA_FILE}" PATH)
+    file(RELATIVE_PATH CUDA_FILE_RELATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" "${CUDA_FILE_PATH}")
+    string(REPLACE "\\" "/" GROUP_PATH "${CUDA_FILE_RELATIVE_PATH}")
     file(RELATIVE_PATH EXTERNAL_INCLUDE_RELATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/include")
     string(REPLACE ${EXTERNAL_INCLUDE_RELATIVE_PATH} "" GROUP_PATH "${GROUP_PATH}")
     string(REPLACE "src" "" GROUP_PATH "${GROUP_PATH}")
     string(REPLACE "include/cuda" "" GROUP_PATH "${GROUP_PATH}")
-    source_group("${GROUP_PATH}" FILES "${CODE_FILE}")
+    source_group("${GROUP_PATH}" FILES "${CUDA_FILE}")
 endforeach()

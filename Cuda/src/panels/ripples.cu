@@ -1,4 +1,4 @@
-#include "learn_cuda/panels/ripples.hpp"
+#include "cuda/panels/ripples.hpp"
 #include "cuda/utils/cuda_helper.hpp"
 #include "open_gl/resources/texture.hpp"
 #include "ui/widgets/texts/text.hpp"
@@ -6,7 +6,7 @@
 
 #include <cuda_runtime.h>
 
-namespace LearnCuda::Panels
+namespace Cuda::Panels
 {
     __global__ void ripplesGpu(uint8_t* buffer, float ticks, Ripples& ripples)
     {
@@ -30,7 +30,7 @@ namespace LearnCuda::Panels
         if (!m_isGPUCalculationRunning)
             return;
 
-        Utils::Time::Clock clock;
+        ::Utils::Time::Clock clock;
         clock.Start();
 
         uint8_t* buffer = m_gpuImageBuffer.data();

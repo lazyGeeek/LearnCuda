@@ -1,11 +1,11 @@
-#include "learn_cuda/panels/cuda_info.hpp"
+#include "cuda/panels/cuda_info.hpp"
 #include "cuda/device.hpp"
 #include "cuda/utils/cuda_helper.hpp"
 #include "ui/widgets/texts/colored_text.hpp"
 #include "ui/widgets/layouts/tree_node.hpp"
 #include "utils/logs/logger.hpp"
 
-namespace LearnCuda::Panels
+namespace Cuda::Panels
 {
     using UIColoredText    = UI::Widgets::Texts::ColoredText;
     using UIColoredTextPtr = std::shared_ptr<UIColoredText>;

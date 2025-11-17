@@ -1,12 +1,12 @@
-#include "learn_cuda/panels/menu.hpp"
-#include "learn_cuda/panels/cuda_info.hpp"
-#include "learn_cuda/panels/julia_fractal.hpp"
-#include "learn_cuda/panels/ripples.hpp"
-#include "learn_cuda/panels/threads_sync.hpp"
+#include "cuda/panels/menu.hpp"
+#include "cuda/panels/cuda_info.hpp"
+#include "cuda/panels/julia_fractal.hpp"
+#include "cuda/panels/ripples.hpp"
+#include "cuda/panels/threads_sync.hpp"
 #include "ui/modules/canvas.hpp"
 #include "ui/widgets/buttons/button.hpp"
 
-namespace LearnCuda::Panels
+namespace Cuda::Panels
 {
     using UIButton = UI::Widgets::Buttons::Button;
     using UIButtonPtr = std::shared_ptr<UIButton>;

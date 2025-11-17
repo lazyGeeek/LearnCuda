@@ -1,4 +1,4 @@
-#include "learn_cuda/panels/julia_fractal.hpp"
+#include "cuda/panels/julia_fractal.hpp"
 #include "cuda/math/complex_number.hu"
 #include "cuda/utils/cuda_helper.hpp"
 #include "open_gl/resources/texture.hpp"
@@ -9,7 +9,7 @@
 
 #include <cuda_runtime.h>
 
-namespace LearnCuda::Panels
+namespace Cuda::Panels
 {
     __device__ int JuliaFractal::juliaGPU(int x, int y)
     {
@@ -48,7 +48,7 @@ namespace LearnCuda::Panels
         if (!m_isGPUCalculationRunning)
             return;
 
-        Utils::Time::Clock clock;
+        ::Utils::Time::Clock clock;
         clock.Start();
 
         uint8_t* buffer = m_gpuImageBuffer.data();

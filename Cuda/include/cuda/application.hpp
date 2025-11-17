@@ -1,6 +1,6 @@
 #pragma once
-#ifndef LEARN_CUDA_APPLICATION_HPP_
-#define LEARN_CUDA_APPLICATION_HPP_
+#ifndef CUDA_APPLICATION_HPP_
+#define CUDA_APPLICATION_HPP_
 
 #include <filesystem>
 #include <memory>
@@ -9,7 +9,7 @@ namespace OpenGL { class Driver; }
 namespace UI { class UIManager; }
 namespace Window { class GLFW; }
 
-namespace LearnCuda
+namespace Cuda
 {
     class Application
     {
@@ -34,4 +34,4 @@ namespace LearnCuda
     };
 }
 
-#endif // LEARN_CUDA_APPLICATION_HPP_
+#endif // CUDA_APPLICATION_HPP_

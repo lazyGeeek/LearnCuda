@@ -2,14 +2,14 @@
 #include <iostream>
 #include <memory>
 
-#include "learn_cuda/application.hpp"
+#include "cuda/application.hpp"
 
 int main(int argc, char* argv[])
 {
     try
     {
         std::filesystem::path parentPath = std::filesystem::path(argv[0]).parent_path();
-        std::unique_ptr<LearnCuda::Application> app = std::make_unique<LearnCuda::Application>(parentPath);
+        std::unique_ptr<Cuda::Application> app = std::make_unique<Cuda::Application>(parentPath);
         if (app) app->Run();
     }
     catch (std::exception& e)

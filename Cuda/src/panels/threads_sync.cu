@@ -1,8 +1,8 @@
 #include "cuda/panels/threads_sync.hpp"
 #include "cuda/utils/cuda_helper.hpp"
+#include "cuda/utils/timer.hpp"
 #include "open_gl/resources/texture.hpp"
 #include "ui/widgets/texts/text.hpp"
-#include "utils/time/clock.hpp"
 
 #include <cuda_runtime.h>
 
@@ -39,31 +39,21 @@ namespace Cuda::Panels
         if (!m_isAsyncCalculationRunning)
             return;
 
-        ::Utils::Time::Clock clock;
-        clock.Start();
+        Utils::Timer timer;
+        timer.Start();
 
         uint8_t* buffer = m_asyncImageBuffer.data();
-        cudaError_t error = cudaMalloc((void**)&buffer, m_asyncImageBuffer.size() * sizeof(uint8_t));
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
+        CUDA_HANDLE_ERROR(cudaMalloc((void**)&buffer, m_asyncImageBuffer.size() * sizeof(uint8_t)));
 
         dim3 blocks(IMAGE_WIDTH / THREADS_COUNT, IMAGE_HEIGHT / THREADS_COUNT);
         dim3 threads(THREADS_COUNT, THREADS_COUNT);
 
         kernel<<<blocks, threads>>>(buffer, *this, false);
 
-        error = cudaMemcpy(m_asyncImageBuffer.data(), buffer, m_asyncImageBuffer.size(), cudaMemcpyDeviceToHost);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaFree(buffer);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        m_asyncCalculationTimeText->SetContent("Calculation time: %.3f milliseconds", clock.GetMicroseconds() / 1000.0f);
+        CUDA_HANDLE_ERROR(cudaMemcpy(m_asyncImageBuffer.data(), buffer, m_asyncImageBuffer.size(), cudaMemcpyDeviceToHost));
+        CUDA_HANDLE_ERROR(cudaFree(buffer));
+        
+        m_asyncCalculationTimeText->SetContent("Calculation time: %.3f milliseconds", timer.Stop());
     }
 
     void ThreadsSync::calculateSync()
@@ -71,30 +61,20 @@ namespace Cuda::Panels
         if (!m_isSyncCalculationRunning)
             return;
 
-        ::Utils::Time::Clock clock;
-        clock.Start();
+        Utils::Timer timer;
+        timer.Start();
 
         uint8_t* buffer = m_syncImageBuffer.data();
-        cudaError_t error = cudaMalloc((void**)&buffer, m_syncImageBuffer.size() * sizeof(uint8_t));
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
+        CUDA_HANDLE_ERROR(cudaMalloc((void**)&buffer, m_syncImageBuffer.size() * sizeof(uint8_t)));
 
         dim3 blocks(IMAGE_WIDTH / THREADS_COUNT, IMAGE_HEIGHT / THREADS_COUNT);
         dim3 threads(THREADS_COUNT, THREADS_COUNT);
 
         kernel<<<blocks, threads>>>(buffer, *this, true);
 
-        error = cudaMemcpy(m_syncImageBuffer.data(), buffer, m_syncImageBuffer.size(), cudaMemcpyDeviceToHost);
+        CUDA_HANDLE_ERROR(cudaMemcpy(m_syncImageBuffer.data(), buffer, m_syncImageBuffer.size(), cudaMemcpyDeviceToHost));
+        CUDA_HANDLE_ERROR(cudaFree(buffer));
 
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaFree(buffer);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        m_syncCalculationTimeText->SetContent("Calculation time: %.3f milliseconds", clock.GetMicroseconds() / 1000.0f);
+        m_syncCalculationTimeText->SetContent("Calculation time: %.3f milliseconds", timer.Stop());
     }
 }

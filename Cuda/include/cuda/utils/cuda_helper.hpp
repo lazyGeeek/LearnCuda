@@ -5,11 +5,20 @@
 #include <cuda_runtime.h>
 #include <cuda.h>
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace Cuda::Utils
 {
+    #define CUDA_HANDLE_ERROR(error) {\
+            if (error != cudaSuccess)\
+            {\
+                Cuda::Utils::CudaHelper::PrintCudaError(error);\
+                throw std::runtime_error("ERROR: Cuda error");\
+            }\
+        };
+
     struct MtoCores
     {
         // 0xMm (hexidecimal notation),

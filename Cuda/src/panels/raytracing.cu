@@ -1,12 +1,10 @@
 #include "cuda/panels/raytracing.hpp"
 #include "cuda/utils/cuda_helper.hpp"
+#include "cuda/utils/timer.hpp"
 #include "open_gl/resources/texture.hpp"
 #include "ui/widgets/texts/text.hpp"
-#include "utils/time/clock.hpp"
 
 #include <cuda_runtime.h>
-
-#include <iostream>
 
 namespace Cuda::Panels
 {
@@ -87,88 +85,28 @@ namespace Cuda::Panels
         if (!m_isNoconstCalculationRunning)
             return;
 
-        cudaEvent_t start;
-        cudaEvent_t stop;
-
-        cudaError_t error = cudaEventCreate(&start);
+        Utils::Timer timer;
+        timer.Start();
         
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaEventCreate(&stop);
-        
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaEventRecord(start, 0);
-
         uint8_t* buffer = m_noconstImageBuffer.data();
-        error = cudaMalloc((void**)&buffer, m_noconstImageBuffer.size() * sizeof(uint8_t));
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
+        CUDA_HANDLE_ERROR(cudaMalloc((void**)&buffer, m_noconstImageBuffer.size() * sizeof(uint8_t)));
 
         Shapes::Sphere* spheres = nullptr;
-        error = cudaMalloc((void**)&spheres, m_spheres.size() * sizeof(Shapes::Sphere));
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaMemcpy(spheres, m_spheres.data(),
-                           sizeof(Shapes::Sphere) * SPHERES_COUNT,
-                           cudaMemcpyHostToDevice);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
+        CUDA_HANDLE_ERROR(cudaMalloc((void**)&spheres, m_spheres.size() * sizeof(Shapes::Sphere)));
+        CUDA_HANDLE_ERROR(cudaMemcpy(spheres, m_spheres.data(),
+                          sizeof(Shapes::Sphere) * SPHERES_COUNT,
+                          cudaMemcpyHostToDevice));
 
         dim3 blocks(IMAGE_WIDTH / THREADS_COUNT, IMAGE_HEIGHT / THREADS_COUNT);
         dim3 threads(THREADS_COUNT, THREADS_COUNT);
 
         kernelNonconst<<<blocks, threads>>>(buffer, spheres, *this);
 
-        error = cudaMemcpy(m_noconstImageBuffer.data(), buffer, m_noconstImageBuffer.size(), cudaMemcpyDeviceToHost);
+        CUDA_HANDLE_ERROR(cudaMemcpy(m_noconstImageBuffer.data(), buffer, m_noconstImageBuffer.size(), cudaMemcpyDeviceToHost));        
+        CUDA_HANDLE_ERROR(cudaFree(spheres));
+        CUDA_HANDLE_ERROR(cudaFree(buffer));
 
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaEventRecord(stop, 0);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaEventSynchronize(stop);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        float elapsedTime;
-
-        error = cudaEventElapsedTime( &elapsedTime, start, stop );
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-        
-        m_noconstCalculationTimeText->SetContent("Calculation time: %.3f milliseconds", elapsedTime);
- 
-        error = cudaEventDestroy(start);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
- 
-        error = cudaEventDestroy(stop);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaFree(spheres);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaFree(buffer);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
+        m_noconstCalculationTimeText->SetContent("Calculation time: %.3f milliseconds", timer.Stop());
     }
 
     void Raytracing::calculateConst()
@@ -176,76 +114,24 @@ namespace Cuda::Panels
         if (!m_isConstCalculationRunning)
             return;
 
-        cudaEvent_t start;
-        cudaEvent_t stop;
-
-        cudaError_t error = cudaEventCreate(&start);
-        
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaEventCreate(&stop);
-        
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaEventRecord(start, 0);
+        Utils::Timer timer;
+        timer.Start();
 
         uint8_t* buffer = m_constImageBuffer.data();
-        error = cudaMalloc((void**)&buffer, m_constImageBuffer.size() * sizeof(uint8_t));
 
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaMemcpy(m_constSpheres, m_spheres.data(),
-                           sizeof(Shapes::Sphere) * SPHERES_COUNT,
-                           cudaMemcpyHostToDevice);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
+        CUDA_HANDLE_ERROR(cudaMalloc((void**)&buffer, m_constImageBuffer.size() * sizeof(uint8_t)));
+        CUDA_HANDLE_ERROR(cudaMemcpy(m_constSpheres, m_spheres.data(),
+                          sizeof(Shapes::Sphere) * SPHERES_COUNT,
+                          cudaMemcpyHostToDevice));
 
         dim3 blocks(IMAGE_WIDTH / THREADS_COUNT, IMAGE_HEIGHT / THREADS_COUNT);
         dim3 threads(THREADS_COUNT, THREADS_COUNT);
 
         kernelConst<<<blocks, threads>>>(buffer, *this);
 
-        error = cudaMemcpy(m_constImageBuffer.data(), buffer, m_constImageBuffer.size(), cudaMemcpyDeviceToHost);
+        CUDA_HANDLE_ERROR(cudaMemcpy(m_constImageBuffer.data(), buffer, m_constImageBuffer.size(), cudaMemcpyDeviceToHost));
+        CUDA_HANDLE_ERROR(cudaFree(buffer));
 
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
- 
-        error = cudaEventRecord(stop, 0);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaEventSynchronize(stop);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        float elapsedTime;
-
-        error = cudaEventElapsedTime( &elapsedTime, start, stop );
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-        
-        m_constCalculationTimeText->SetContent("Calculation time: %.3f milliseconds", elapsedTime);
- 
-        error = cudaEventDestroy(start);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
- 
-        error = cudaEventDestroy(stop);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
-
-        error = cudaFree(buffer);
-
-        if (error != cudaSuccess)
-            Cuda::Utils::CudaHelper::PrintCudaError(error);
+        m_constCalculationTimeText->SetContent("Calculation time: %.3f milliseconds", timer.Stop());
     }
 }

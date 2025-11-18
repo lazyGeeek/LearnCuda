@@ -65,6 +65,8 @@ namespace Cuda::Utils
             ::Utils::Logs::Logger::Error("CUDA Error: %s: %i\nCode: %d; Description: %s\n",
                 __FILE__, __LINE__, static_cast<int>(error), cudaGetErrorString(error));
         }
+        else
+            ::Utils::Logs::Logger::Info("CUDA Info: %s: %i\nNo error\n", __FILE__, __LINE__);
     }
 
     int CudaHelper::GetDeviceCount()

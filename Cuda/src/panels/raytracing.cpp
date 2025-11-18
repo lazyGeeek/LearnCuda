@@ -6,7 +6,6 @@
 #include "utils/random.hpp"
 
 #include <cmath>
-#include <iostream>
 
 namespace Cuda::Panels
 {
@@ -24,9 +23,9 @@ namespace Cuda::Panels
             sphere.R = Utils::Random::GetFloat(0.0f, 1.0f);
             sphere.G = Utils::Random::GetFloat(0.0f, 1.0f);
             sphere.B = Utils::Random::GetFloat(0.0f, 1.0f);
-            sphere.X = Utils::Random::GetFloat(-150.0f, 250.0f);
-            sphere.Y = Utils::Random::GetFloat(-150.0f, 250.0f);
-            sphere.Z = Utils::Random::GetFloat(-150.0f, 250.0f);
+            sphere.X = Utils::Random::GetFloat(-250.0f, 250.0f);
+            sphere.Y = Utils::Random::GetFloat(-250.0f, 250.0f);
+            sphere.Z = Utils::Random::GetFloat(-250.0f, 250.0f);
             sphere.Radius = Utils::Random::GetFloat(20.0f, 100.0f);
 
             m_spheres.emplace_back(sphere);

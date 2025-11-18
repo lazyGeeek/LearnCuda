@@ -12,6 +12,7 @@ namespace Cuda::Panels
     class JuliaFractal;
     class Ripples;
     class ThreadsSync;
+    class Raytracing;
 
     class MenuPanel : public UI::Panels::WindowPanel
     {
@@ -30,6 +31,7 @@ namespace Cuda::Panels
         std::shared_ptr<JuliaFractal> m_juliaFractal = nullptr;
         std::shared_ptr<Ripples> m_ripples = nullptr;
         std::shared_ptr<ThreadsSync> m_threadsSync = nullptr;
+        std::shared_ptr<Raytracing> m_raytracing = nullptr;
     };
 }
 

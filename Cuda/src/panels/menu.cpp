@@ -3,6 +3,7 @@
 #include "cuda/panels/julia_fractal.hpp"
 #include "cuda/panels/ripples.hpp"
 #include "cuda/panels/threads_sync.hpp"
+#include "cuda/panels/raytracing.hpp"
 #include "ui/modules/canvas.hpp"
 #include "ui/widgets/buttons/button.hpp"
 
@@ -37,11 +38,18 @@ namespace Cuda::Panels
         m_threadsSync->SetPosition(50.0f, 50.0f);
         m_threadsSync->SetOpened(false);
 
+        m_raytracing = m_canvas->CreatePanel<Panels::Raytracing>();
+        m_raytracing->SetAutoSize(true);
+        m_raytracing->Resize(1100.0f, 700.0f);
+        m_raytracing->SetPosition(50.0f, 50.0f);
+        m_raytracing->SetOpened(false);
+
         UIButtonPtr cudaInfoButton = CreateWidget<UIButton>("Show GPU Info");
         cudaInfoButton->Separate(true);
         UIButtonPtr juliaFractalButton = CreateWidget<UIButton>("Julia Fractal");
         UIButtonPtr wavesButton = CreateWidget<UIButton>("Ripples");
         UIButtonPtr threadsSyncButton = CreateWidget<UIButton>("Threads Sync");
+        UIButtonPtr raytracingButton = CreateWidget<UIButton>("Raytracing");
 
         cudaInfoButton->ClickedEvent += [&]()
         {
@@ -61,6 +69,11 @@ namespace Cuda::Panels
         threadsSyncButton->ClickedEvent += [&]()
         {
             if (m_threadsSync) m_threadsSync->SetOpened(true);
+        };
+
+        raytracingButton->ClickedEvent += [&]()
+        {
+            if (m_raytracing) m_raytracing->SetOpened(true);
         };
     }
 }

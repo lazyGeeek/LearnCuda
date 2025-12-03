@@ -5,6 +5,7 @@
 #include "ui/panels/window_panel.hpp"
 #include "cuda/shapes/sphere.hpp"
 
+#include <atomic>
 #include <thread>
 #include <vector>
 
@@ -36,10 +37,10 @@ namespace Cuda::Panels
         friend __global__ void kernelNonconst(uint8_t* buffer, Shapes::Sphere* spheres, Raytracing& raytracing);
         friend __global__ void kernelConst(uint8_t* buffer, Raytracing& raytracing);
 
-        const size_t IMAGE_WIDTH = 500.0f;
-        const size_t IMAGE_HEIGHT = 500.0f;
-        const size_t IMAGE_BUFFER_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * 3;
-        const size_t THREADS_COUNT = 25;
+        const size_t IMAGE_WIDTH = 512;
+        const size_t IMAGE_HEIGHT = 512;
+        const size_t IMAGE_BUFFER_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * 4;
+        const size_t THREADS_COUNT = 16;
         const size_t SPHERES_COUNT = 10;
         
         __constant__ Shapes::Sphere m_constSpheres[ 10 ];
@@ -55,8 +56,8 @@ namespace Cuda::Panels
         std::shared_ptr<UI::Widgets::Texts::Text> m_noconstCalculationTimeText = nullptr;
         std::shared_ptr<UI::Widgets::Texts::Text> m_constCalculationTimeText = nullptr;
 
-        bool m_isNoconstCalculationRunning = true;
-        bool m_isConstCalculationRunning = true;
+        std::atomic<bool> m_isNoconstCalculationRunning { true };
+        std::atomic<bool> m_isConstCalculationRunning { true };
 
         std::thread m_noconstCalculationThread;
         std::thread m_constCalculationThread;

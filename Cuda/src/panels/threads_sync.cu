@@ -16,7 +16,7 @@ namespace Cuda::Panels
     {
         int x = threadIdx.x + blockIdx.x * blockDim.x; 
         int y = threadIdx.y + blockIdx.y * blockDim.y;
-        int offset = 3 * x + y * 3 * blockDim.x * gridDim.x;
+        int offset = x + y * blockDim.x * gridDim.x;
 
         __shared__ float shared[25][25];
 
@@ -29,14 +29,15 @@ namespace Cuda::Panels
         if (sync)
             __syncthreads();
 
-        buffer[offset + 0] = 0;
-        buffer[offset + 1] = shared[25 - 1 - threadIdx.x][25 - 1 - threadIdx.y];
-        buffer[offset + 2] = 0;
+        buffer[offset * 4 + 0] = 0;
+        buffer[offset * 4 + 1] = shared[25 - 1 - threadIdx.x][25 - 1 - threadIdx.y];
+        buffer[offset * 4 + 2] = 0;
+        buffer[offset * 4 + 3] = 255;
     }
 
     void ThreadsSync::calculateAsync()
     {
-        if (!m_isAsyncCalculationRunning)
+        if (!m_isAsyncCalculationRunning.load(std::memory_order_acquire))
             return;
 
         Utils::Timer timer;
@@ -58,7 +59,7 @@ namespace Cuda::Panels
 
     void ThreadsSync::calculateSync()
     {
-        if (!m_isSyncCalculationRunning)
+        if (!m_isSyncCalculationRunning.load(std::memory_order_acquire))
             return;
 
         Utils::Timer timer;

@@ -14,7 +14,7 @@ namespace Cuda::Panels
 
     CudaInfoPanel::CudaInfoPanel() : UI::Panels::WindowPanel("Cuda Info")
     {
-        Cuda::Utils::CudaHelper::PrintCudaInfo();
+        // Cuda::Utils::CudaHelper::PrintCudaInfo();
 
         int deviceCount = Cuda::Utils::CudaHelper::GetDeviceCount();
 

@@ -99,9 +99,9 @@ namespace Cuda::Panels
         {
             m_cpuCalculationThread = std::thread([&]()
             {
-                m_isCPUCalculationRunning = true;
+                m_isCPUCalculationRunning.store(true, std::memory_order_release);
 
-                while (m_isCPUCalculationRunning)
+                while (m_isCPUCalculationRunning.load(std::memory_order_acquire))
                 {
                     if (IsOpened()) calculateJuliaOnCPU();
                 }
@@ -109,9 +109,9 @@ namespace Cuda::Panels
 
             m_gpuCalculationThread = std::thread([&]()
             {
-                m_isGPUCalculationRunning = true;
+                m_isGPUCalculationRunning.store(true, std::memory_order_release);
 
-                while (m_isGPUCalculationRunning)
+                while (m_isGPUCalculationRunning.load(std::memory_order_acquire))
                 {
                     if (IsOpened()) calculateJuliaOnGPU();
                 }
@@ -120,8 +120,8 @@ namespace Cuda::Panels
 
         CloseEvent += [&]()
         {
-            m_isCPUCalculationRunning = false;
-            m_isGPUCalculationRunning = false;
+            m_isCPUCalculationRunning.store(false, std::memory_order_release);
+            m_isGPUCalculationRunning.store(false, std::memory_order_release);
             
             if (m_cpuCalculationThread.joinable())
                 m_cpuCalculationThread.join();
@@ -133,8 +133,8 @@ namespace Cuda::Panels
 
     JuliaFractal::~JuliaFractal()
     {
-        m_isCPUCalculationRunning = false;
-        m_isGPUCalculationRunning = false;
+        m_isCPUCalculationRunning.store(false, std::memory_order_release);
+        m_isGPUCalculationRunning.store(false, std::memory_order_release);
 
         if (m_cpuCalculationThread.joinable())
             m_cpuCalculationThread.join();
@@ -205,13 +205,14 @@ namespace Cuda::Panels
         {
             for (int x = 0; x < IMAGE_WIDTH; ++x)
             {
-                int offset = x * 3 + y * 3 * IMAGE_WIDTH;
+                int offset = x + y * IMAGE_WIDTH;
 
                 int color = 255 * juliaCPU(x, y);
 
-                m_cpuImageBuffer[offset + 0] = color;
-                m_cpuImageBuffer[offset + 1] = color;
-                m_cpuImageBuffer[offset + 2] = color;
+                m_cpuImageBuffer[offset * 4 + 0] = color;
+                m_cpuImageBuffer[offset * 4 + 1] = color;
+                m_cpuImageBuffer[offset * 4 + 2] = color;
+                m_cpuImageBuffer[offset * 4 + 3] = color;
             }
         }
 

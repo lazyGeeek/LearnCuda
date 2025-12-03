@@ -4,6 +4,7 @@
 
 #include "ui/panels/window_panel.hpp"
 
+#include <atomic>
 #include <memory>
 #include <thread>
 #include <vector>
@@ -45,9 +46,9 @@ namespace Cuda::Panels
         friend __global__ void gpuStartCalculation(uint8_t* buffer, JuliaFractal& fractal);
 
         const size_t ABSOLUTE_VALUE = 1000;
-        const size_t IMAGE_WIDTH = 500.0f;
-        const size_t IMAGE_HEIGHT = 500.0f;
-        const size_t IMAGE_BUFFER_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * 3;
+        const size_t IMAGE_WIDTH = 512;
+        const size_t IMAGE_HEIGHT = 512;
+        const size_t IMAGE_BUFFER_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * 4;
         
         std::vector<uint8_t> m_cpuImageBuffer;
         std::vector<uint8_t> m_gpuImageBuffer;
@@ -85,8 +86,8 @@ namespace Cuda::Panels
         std::pair<float, float> m_scaleLimit = { 0.1f, 100.0f };
         std::pair<uint32_t, uint32_t> m_iterationsLimit = { 1, 1000 };
 
-        bool m_isCPUCalculationRunning = true;
-        bool m_isGPUCalculationRunning = true;
+        std::atomic<bool> m_isCPUCalculationRunning { false };
+        std::atomic<bool> m_isGPUCalculationRunning { false };
 
         std::thread m_cpuCalculationThread;
         std::thread m_gpuCalculationThread;

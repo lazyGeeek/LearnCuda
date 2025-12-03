@@ -69,9 +69,9 @@ namespace Cuda::Panels
         {
             m_noconstCalculationThread = std::thread([&]()
             {
-                m_isNoconstCalculationRunning = true;
+                m_isNoconstCalculationRunning.store(true, std::memory_order_release);
 
-                while (m_isNoconstCalculationRunning)
+                while (m_isNoconstCalculationRunning.load(std::memory_order_acquire))
                 {
                     if (IsOpened()) calculateNoconst();
                 }
@@ -79,9 +79,9 @@ namespace Cuda::Panels
             
             m_constCalculationThread = std::thread([&]()
             {
-                m_isConstCalculationRunning = true;
+                m_isConstCalculationRunning.store(true, std::memory_order_release);
 
-                while (m_isConstCalculationRunning)
+                while (m_isConstCalculationRunning.load(std::memory_order_acquire))
                 {
                     if (IsOpened()) calculateConst();
                 }
@@ -90,8 +90,8 @@ namespace Cuda::Panels
 
         CloseEvent += [&]()
         {
-            m_isNoconstCalculationRunning = false;
-            m_isConstCalculationRunning = false;
+            m_isNoconstCalculationRunning.store(false, std::memory_order_release);
+            m_isConstCalculationRunning.store(false, std::memory_order_release);
             
             if (m_noconstCalculationThread.joinable())
                 m_noconstCalculationThread.join();
@@ -103,8 +103,8 @@ namespace Cuda::Panels
 
     Raytracing::~Raytracing()
     {
-        m_isNoconstCalculationRunning = false;
-        m_isConstCalculationRunning = false;
+        m_isNoconstCalculationRunning.store(false, std::memory_order_release);
+        m_isConstCalculationRunning.store(false, std::memory_order_release);
 
         if (m_noconstCalculationThread.joinable())
             m_noconstCalculationThread.join();

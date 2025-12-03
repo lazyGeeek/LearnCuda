@@ -27,6 +27,9 @@ namespace Cuda::Utils
         int Cores;
     };
 
+    __global__ void FloatToColor(float* input, uint8_t* output);
+    __device__ uint8_t Value(float n1, float n2, int hue);
+
     class CudaHelper
     {
     public:

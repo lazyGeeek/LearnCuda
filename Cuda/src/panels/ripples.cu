@@ -12,7 +12,7 @@ namespace Cuda::Panels
     {
         int x = threadIdx.x + blockIdx.x * blockDim.x; 
         int y = threadIdx.y + blockIdx.y * blockDim.y;
-        int offset = 3 * x + y * 3 * blockDim.x * gridDim.x;
+        int offset = x + y * blockDim.x * gridDim.x;
 
         float fx = x - ripples.IMAGE_WIDTH / 2.0f;
         float fy = y - ripples.IMAGE_HEIGHT / 2.0f;
@@ -20,14 +20,15 @@ namespace Cuda::Panels
 
         int color = static_cast<int>(128.0f + 127.0f * cos(d / 10.0f - ticks / 7.0f) / (d / 10.0f + 1.0f));
 
-        buffer[offset + 0] = color;
-        buffer[offset + 1] = color;
-        buffer[offset + 2] = color;
+        buffer[offset * 4 + 0] = color;
+        buffer[offset * 4 + 1] = color;
+        buffer[offset * 4 + 2] = color;
+        buffer[offset * 4 + 3] = color;
     }
 
     void Ripples::calculateRipplesOnGPU(int64_t ticks)
     {
-        if (!m_isGPUCalculationRunning)
+        if (!m_isGPUCalculationRunning.load(std::memory_order_acquire))
             return;
 
         Utils::Timer timer;
@@ -36,8 +37,8 @@ namespace Cuda::Panels
         uint8_t* buffer = m_gpuImageBuffer.data();
         CUDA_HANDLE_ERROR(cudaMalloc((void**)&buffer, m_gpuImageBuffer.size() * sizeof(uint8_t)));
 
-        dim3 blocks(IMAGE_WIDTH / 25, IMAGE_HEIGHT / 25);
-        dim3 threads(25, 25);
+        dim3 blocks(IMAGE_WIDTH / THREADS_COUNT, IMAGE_HEIGHT / THREADS_COUNT);
+        dim3 threads(THREADS_COUNT, THREADS_COUNT);
 
         ripplesGpu<<<blocks, threads>>>(buffer, ticks / 50.0f, *this);
 

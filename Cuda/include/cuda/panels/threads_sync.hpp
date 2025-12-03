@@ -4,6 +4,7 @@
 
 #include "ui/panels/window_panel.hpp"
 
+#include <atomic>
 #include <thread>
 
 #include <cuda_runtime.h>
@@ -33,9 +34,9 @@ namespace Cuda::Panels
 
         friend __global__ void kernel(uint8_t* buffer, ThreadsSync& threadsSync, bool sync);
 
-        const size_t IMAGE_WIDTH = 500.0f;
-        const size_t IMAGE_HEIGHT = 500.0f;
-        const size_t IMAGE_BUFFER_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * 3;
+        const size_t IMAGE_WIDTH = 512;
+        const size_t IMAGE_HEIGHT = 512;
+        const size_t IMAGE_BUFFER_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * 4;
         const size_t THREADS_COUNT = 25;
         
         std::vector<uint8_t> m_asyncImageBuffer;
@@ -47,8 +48,8 @@ namespace Cuda::Panels
         std::shared_ptr<UI::Widgets::Texts::Text> m_asyncCalculationTimeText = nullptr;
         std::shared_ptr<UI::Widgets::Texts::Text> m_syncCalculationTimeText = nullptr;
 
-        bool m_isAsyncCalculationRunning = true;
-        bool m_isSyncCalculationRunning = true;
+        std::atomic<bool> m_isAsyncCalculationRunning { true };
+        std::atomic<bool> m_isSyncCalculationRunning { true };
 
         std::thread m_asyncCalculationThread;
         std::thread m_syncCalculationThread;

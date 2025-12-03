@@ -14,7 +14,7 @@ namespace Cuda::Panels
     {
         int x = threadIdx.x + blockIdx.x * blockDim.x; 
         int y = threadIdx.y + blockIdx.y * blockDim.y;
-        int offset = 3 * x + y * 3 * blockDim.x * gridDim.x;
+        int offset = x + y * blockDim.x * gridDim.x;
 
         float midX = raytracing.IMAGE_WIDTH / 2.0f;
         float midY = raytracing.IMAGE_HEIGHT / 2.0f;
@@ -40,16 +40,17 @@ namespace Cuda::Panels
             }
         }
 
-        buffer[offset + 0] = static_cast<int>(r * 255);
-        buffer[offset + 1] = static_cast<int>(g * 255);
-        buffer[offset + 2] = static_cast<int>(b * 255);
+        buffer[offset * 4 + 0] = static_cast<int>(r * 255);
+        buffer[offset * 4 + 1] = static_cast<int>(g * 255);
+        buffer[offset * 4 + 2] = static_cast<int>(b * 255);
+        buffer[offset * 4 + 3] = 255;
     }
 
     __global__ void kernelConst(uint8_t* buffer, Raytracing& raytracing)
     {
         int x = threadIdx.x + blockIdx.x * blockDim.x; 
         int y = threadIdx.y + blockIdx.y * blockDim.y;
-        int offset = 3 * x + y * 3 * blockDim.x * gridDim.x;
+        int offset = x + y * blockDim.x * gridDim.x;
 
         float midX = raytracing.IMAGE_WIDTH / 2.0f;
         float midY = raytracing.IMAGE_HEIGHT / 2.0f;
@@ -75,14 +76,15 @@ namespace Cuda::Panels
             }
         }
 
-        buffer[offset + 0] = static_cast<int>(r * 255);
-        buffer[offset + 1] = static_cast<int>(g * 255);
-        buffer[offset + 2] = static_cast<int>(b * 255);
+        buffer[offset * 4 + 0] = static_cast<int>(r * 255);
+        buffer[offset * 4 + 1] = static_cast<int>(g * 255);
+        buffer[offset * 4 + 2] = static_cast<int>(b * 255);
+        buffer[offset * 4 + 3] = 255;
     }
 
     void Raytracing::calculateNoconst()
     {
-        if (!m_isNoconstCalculationRunning)
+        if (!m_isNoconstCalculationRunning.load(std::memory_order_acquire))
             return;
 
         Utils::Timer timer;
@@ -111,7 +113,7 @@ namespace Cuda::Panels
 
     void Raytracing::calculateConst()
     {
-        if (!m_isConstCalculationRunning)
+        if (!m_isConstCalculationRunning.load(std::memory_order_acquire))
             return;
 
         Utils::Timer timer;

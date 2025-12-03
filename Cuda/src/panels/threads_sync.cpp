@@ -4,9 +4,6 @@
 #include "ui/widgets/texts/text.hpp"
 #include "ui/widgets/visuals/image.hpp"
 
-#include <cmath>
-#include <iostream>
-
 namespace Cuda::Panels
 {
     ThreadsSync::ThreadsSync() : UI::Panels::WindowPanel("Thread Sync")
@@ -55,9 +52,9 @@ namespace Cuda::Panels
         {
             m_asyncCalculationThread = std::thread([&]()
             {
-                m_isAsyncCalculationRunning = true;
+                m_isAsyncCalculationRunning.store(true, std::memory_order_release);
 
-                while (m_isAsyncCalculationRunning)
+                while (m_isAsyncCalculationRunning.load(std::memory_order_acquire))
                 {
                     if (IsOpened()) calculateAsync();
                 }
@@ -65,9 +62,9 @@ namespace Cuda::Panels
             
             m_syncCalculationThread = std::thread([&]()
             {
-                m_isSyncCalculationRunning = true;
+                m_isSyncCalculationRunning.store(true, std::memory_order_release);
 
-                while (m_isSyncCalculationRunning)
+                while (m_isSyncCalculationRunning.load(std::memory_order_acquire))
                 {
                     if (IsOpened()) calculateSync();
                 }
@@ -76,8 +73,8 @@ namespace Cuda::Panels
 
         CloseEvent += [&]()
         {
-            m_isAsyncCalculationRunning = false;
-            m_isSyncCalculationRunning = false;
+            m_isAsyncCalculationRunning.store(false, std::memory_order_release);
+            m_isSyncCalculationRunning.store(false, std::memory_order_release);
             
             if (m_asyncCalculationThread.joinable())
                 m_asyncCalculationThread.join();
@@ -89,8 +86,8 @@ namespace Cuda::Panels
 
     ThreadsSync::~ThreadsSync()
     {
-        m_isAsyncCalculationRunning = false;
-        m_isSyncCalculationRunning = false;
+        m_isAsyncCalculationRunning.store(false, std::memory_order_release);
+        m_isSyncCalculationRunning.store(false, std::memory_order_release);
 
         if (m_asyncCalculationThread.joinable())
             m_asyncCalculationThread.join();

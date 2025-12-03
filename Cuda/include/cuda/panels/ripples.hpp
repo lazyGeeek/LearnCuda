@@ -4,6 +4,7 @@
 
 #include "ui/panels/window_panel.hpp"
 
+#include <atomic>
 #include <thread>
 
 #include <cuda_runtime.h>
@@ -35,9 +36,10 @@ namespace Cuda::Panels
 
         friend __global__ void ripplesGpu(uint8_t* buffer, float ticks, Ripples& ripples);
 
-        const size_t IMAGE_WIDTH = 500.0f;
-        const size_t IMAGE_HEIGHT = 500.0f;
-        const size_t IMAGE_BUFFER_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * 3;
+        const size_t IMAGE_WIDTH = 512;
+        const size_t IMAGE_HEIGHT = 512;
+        const size_t THREADS_COUNT = 16;
+        const size_t IMAGE_BUFFER_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * 4;
         
         std::vector<uint8_t> m_cpuImageBuffer;
         std::vector<uint8_t> m_gpuImageBuffer;
@@ -48,8 +50,8 @@ namespace Cuda::Panels
         std::shared_ptr<UI::Widgets::Texts::Text> m_cpuCalculationTimeText = nullptr;
         std::shared_ptr<UI::Widgets::Texts::Text> m_gpuCalculationTimeText = nullptr;
         
-        bool m_isCPUCalculationRunning = true;
-        bool m_isGPUCalculationRunning = true;
+        std::atomic<bool> m_isCPUCalculationRunning { true };
+        std::atomic<bool> m_isGPUCalculationRunning { true };
 
         std::thread m_cpuCalculationThread;
         std::thread m_gpuCalculationThread;

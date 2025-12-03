@@ -13,6 +13,7 @@ namespace Cuda::Panels
     class Ripples;
     class ThreadsSync;
     class Raytracing;
+    class Heat;
 
     class MenuPanel : public UI::Panels::WindowPanel
     {
@@ -32,6 +33,7 @@ namespace Cuda::Panels
         std::shared_ptr<Ripples> m_ripples = nullptr;
         std::shared_ptr<ThreadsSync> m_threadsSync = nullptr;
         std::shared_ptr<Raytracing> m_raytracing = nullptr;
+        std::shared_ptr<Heat> m_heat = nullptr;
     };
 }
 

@@ -34,18 +34,19 @@ namespace Cuda::Panels
     {
         int x = blockIdx.x;
         int y = blockIdx.y;
-        int offset = x * 3 + y * 3 * gridDim.x;
+        int offset = x + y * gridDim.x;
 
         int color = 255 * fractal.juliaGPU(x, y);
 
-        buffer[offset + 0] = color;
-        buffer[offset + 1] = color;
-        buffer[offset + 2] = color;
+        buffer[offset * 4 + 0] = color;
+        buffer[offset * 4 + 1] = color;
+        buffer[offset * 4 + 2] = color;
+        buffer[offset * 4 + 3] = color;
     }
 
     void JuliaFractal::calculateJuliaOnGPU()
     {
-        if (!m_isGPUCalculationRunning)
+        if (!m_isGPUCalculationRunning.load(std::memory_order_acquire))
             return;
 
         Utils::Timer timer;
